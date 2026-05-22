@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="linhas-layouts.css">
 <link rel="stylesheet" href="centro-detalhes.css">
+<link rel="stylesheet" href="responsive-mobile.css">
 
 <style>
   :root {
@@ -56,9 +57,15 @@
     transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
   }
   nav.scrolled {
-    background: rgba(244,244,240,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom-color: var(--borda);
+    background: rgba(244,244,240,0.58);
+    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    backdrop-filter: blur(18px) saturate(1.35);
+    border-bottom-color: rgba(0,0,0,0.06);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset;
+  }
+  /* Fallback p/ browsers sem backdrop-filter */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    nav.scrolled { background: rgba(244,244,240,0.92); }
   }
   .nav-inner {
     max-width: var(--max-w);
@@ -117,6 +124,24 @@
   .nav-social a:hover { background: var(--laranja); transform: translateY(-1px); }
   .nav-social svg { width: 14px; height: 14px; fill: #fff; }
 
+  /* ── Instagram lançamento: selo com legenda ── */
+  .nav-social[data-ig-style="selo"] { gap: 9px; }
+  .nav-social[data-ig-style="selo"]::before {
+    content: "Siga-nos";
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(13,14,11,0.45);
+  }
+  /* mantém o ícone preto padrão; só vira laranja no hover (.nav-social a:hover) */
+
+  /* Cor do ícone do topo — cinza (menos destaque) */
+  .nav-social[data-ig-color="cinza"] a { background: var(--cinza); }
+  .nav-social[data-ig-color="cinza"] a:hover { background: var(--laranja); }
+  .nav-social[data-ig-color="cinza"][data-ig-style="selo"]::before { color: rgba(13,14,11,0.38); }
+
   /* ── HERO ── */
   .hero {
     min-height: 92vh;
@@ -128,513 +153,7 @@
     background: var(--bg);
   }
 
-  /* ════════════════════════════════════════════════════════════════
-     HERO — two variants
-     • foto    (light, default)  — photo with brand malha overlay
-     • cinema  (dark)            — full-bleed dark cinematic hero
-     ════════════════════════════════════════════════════════════════ */
-
-  /* ── Variant: FOTO (light) ───────────────────────────────────── */
-  .hero[data-variant="foto"] .hero-inner {
-    max-width: var(--max-w);
-    margin: 0 auto;
-    padding: 0 48px;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap: 64px;
-    align-items: center;
-    min-height: calc(92vh - 80px);
-    position: relative;
-  }
-  .hero[data-variant="foto"] .hero-content {
-    padding: 60px 0;
-    position: relative;
-    z-index: 3;
-  }
-
-  /* Photo block — image + brand malha overlay */
-  .foto-block {
-    position: relative;
-    height: 100%;
-    min-height: 540px;
-    display: flex;
-    align-items: stretch;
-  }
-  .foto-frame {
-    position: relative;
-    width: 100%;
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--bg3);
-  }
-  .foto-frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    min-height: 540px;
-    filter: saturate(0.85) contrast(1.02);
-  }
-  /* Soft bottom gradient anchoring the malha */
-  .foto-frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, transparent 40%, rgba(13,14,11,0.55) 100%),
-      linear-gradient(135deg, rgba(72,96,24,0.18) 0%, transparent 55%);
-    pointer-events: none;
-  }
-
-  /* Brand malha — three diamonds (azul · verde · laranja) overlaid */
-  .foto-malha {
-    position: absolute;
-    left: -90px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 280px;
-    z-index: 4;
-    pointer-events: none;
-    filter: drop-shadow(0 6px 24px rgba(13,14,11,0.18));
-  }
-  .foto-malha svg { width: 100%; height: auto; display: block; }
-
-  /* Animated draw of the malha edges */
-  .fm-edge {
-    fill: none;
-    stroke-width: 5.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 460;
-    stroke-dashoffset: 460;
-    animation: fmDraw 1.6s cubic-bezier(.4,.1,.3,1) forwards;
-  }
-  .fm-edge.azul    { stroke: var(--azul);    animation-delay: 0.1s; }
-  .fm-edge.verde   { stroke: var(--verde-l); animation-delay: 0.4s; }
-  .fm-edge.laranja { stroke: var(--laranja); animation-delay: 0.7s; }
-  @keyframes fmDraw { to { stroke-dashoffset: 0; } }
-
-  .fm-node {
-    stroke-width: 4;
-    fill: var(--offwhite);
-    opacity: 0;
-    animation: fmPop 0.45s ease-out forwards;
-  }
-  .fm-node.azul    { stroke: var(--azul);    animation-delay: 1.1s; }
-  .fm-node.verde   { stroke: var(--verde-l); animation-delay: 1.25s; }
-  .fm-node.laranja { stroke: var(--laranja); animation-delay: 1.4s; }
-  .fm-node.solid-azul    { fill: var(--azul);    stroke: var(--azul);    }
-  .fm-node.solid-verde   { fill: var(--verde-l); stroke: var(--verde-l); }
-  .fm-node.solid-laranja { fill: var(--laranja); stroke: var(--laranja); }
-  @keyframes fmPop {
-    from { opacity: 0; transform: scale(0); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-
-  /* Pulse on center/orange node */
-  .fm-pulse {
-    fill: var(--laranja);
-    opacity: 0.6;
-    animation: fmPulseRing 2.4s ease-out 1.6s infinite;
-    transform-origin: center;
-    transform-box: fill-box;
-  }
-  @keyframes fmPulseRing {
-    0%   { transform: scale(0.5); opacity: 0.7; }
-    100% { transform: scale(3.2); opacity: 0; }
-  }
-
-  /* Floating eyebrow tag pinned over the photo, brand-malha-styled */
-  .foto-tag {
-    position: absolute;
-    right: 24px;
-    top: 24px;
-    z-index: 5;
-    background: rgba(250,250,247,0.95);
-    backdrop-filter: blur(8px);
-    padding: 10px 14px;
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 18px rgba(13,14,11,0.14);
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--texto);
-  }
-  .foto-tag .ft-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--laranja);
-    box-shadow: 0 0 0 0 rgba(247,108,0,0.5);
-    animation: pulseDot 2s ease-out infinite;
-  }
-
-  /* Caption tile — lower-right of the photo, anchors meaning */
-  .foto-caption {
-    position: absolute;
-    right: 24px;
-    bottom: 24px;
-    z-index: 5;
-    background: var(--offwhite);
-    padding: 16px 18px;
-    border-radius: 4px;
-    border-left: 3px solid var(--laranja);
-    box-shadow: 0 6px 22px rgba(13,14,11,0.14);
-    max-width: 240px;
-  }
-  .foto-caption .fc-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--laranja);
-    margin-bottom: 6px;
-  }
-  .foto-caption .fc-text {
-    font-size: 12px;
-    line-height: 1.55;
-    color: var(--texto);
-    font-weight: 500;
-  }
-
-  /* ── Variant: CINEMA (dark) ──────────────────────────────────── */
-  .hero[data-variant="cinema"] {
-    min-height: 100vh;
-    background: #0d0e0b;
-  }
-
-  /* ── Variant: CINEMA-CLARO (light) ─────────────────────────────
-     Mirror of CINEMA (dark): full-bleed tower photo + signal-line
-     diagram + corner meta — but in a light register. Tower image is
-     kept fully visible (high-key processing). Text legibility comes
-     from a strong left-side veil + the orange hits in the brand. */
-  .hero[data-variant="cinema-claro"] {
-    min-height: 100vh;
-    background: #f0ede4;
-  }
-  .hero[data-variant="cinema-claro"] .hero-inner {
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    position: relative;
-    display: block;
-    min-height: 100vh;
-  }
-  /* Photo bg — same source + zoom motion as cinema escuro,
-     processed high-key so towers stay clearly visible. */
-  .cc-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .cc-bg img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    /* High-key: lifted shadows, lifted brightness, slight desaturation
-       so the photo reads as a luminous, airy backdrop. */
-    filter: brightness(1.18) contrast(0.92) saturate(0.7);
-    animation: cinemaZoom 16s ease-in-out infinite alternate;
-  }
-  /* Veil for legibility — strong on the left where text sits, fading
-     to almost nothing on the right where the signal diagram lives. */
-  .cc-veil {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background:
-      linear-gradient(90deg,
-        rgba(248,246,240,0.92) 0%,
-        rgba(248,246,240,0.78) 30%,
-        rgba(248,246,240,0.32) 60%,
-        rgba(248,246,240,0.10) 100%),
-      linear-gradient(180deg,
-        rgba(248,246,240,0.18) 0%,
-        rgba(248,246,240,0) 25%,
-        rgba(248,246,240,0) 75%,
-        rgba(248,246,240,0.30) 100%);
-  }
-  .hero[data-variant="cinema-claro"] .hero-content {
-    max-width: var(--max-w);
-    margin: 0 auto;
-    padding: 0 48px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    z-index: 3;
-    position: relative;
-    color: var(--texto);
-  }
-  .hero[data-variant="cinema-claro"] .hero-title { color: #1a1a17; }
-  .hero[data-variant="cinema-claro"] .hero-title .t-verde   { color: #5C7A2E; }
-  .hero[data-variant="cinema-claro"] .hero-title .t-laranja { color: #E67817; }
-  .hero[data-variant="cinema-claro"] .hero-sub { color: #4a4a45; }
-  .hero[data-variant="cinema-claro"] .hero-eyebrow span { color: #004f9f; }
-  .hero[data-variant="cinema-claro"] .hero-eyebrow-line  { background: #004f9f; }
-  .hero[data-variant="cinema-claro"] .btn-primary { background: #E67817; }
-  .hero[data-variant="cinema-claro"] .btn-primary:hover { background: #c8650f; }
-  .hero[data-variant="cinema-claro"] .btn-ghost {
-    color: var(--texto);
-    border-color: rgba(26,26,23,0.18);
-  }
-  .hero[data-variant="cinema-claro"] .btn-ghost:hover { border-color: rgba(26,26,23,0.5); }
-
-  /* Signal-line diagram for cinema-claro — same geometry as cinema,
-     but tuned for a light bg (darker, more saturated lines). */
-  .cc-signals {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .cc-signals svg { width: 100%; height: 100%; display: block; }
-  .ccs-line {
-    stroke: rgba(230,120,23,0.7);
-    stroke-width: 1.2;
-    fill: none;
-    stroke-dasharray: 6 8;
-    animation: dashShift 3s linear infinite;
-  }
-  .ccs-line.azul    { stroke: rgba(0,79,159,0.85); }
-  .ccs-line.verde   { stroke: rgba(90,122,30,0.85); }
-  .ccs-line.laranja { stroke: rgba(230,120,23,0.85); }
-  .ccs-line.guide   { stroke: rgba(0,79,159,0.35); stroke-dasharray: none; }
-  .ccs-pin {
-    fill: #E67817;
-    filter: drop-shadow(0 0 5px rgba(230,120,23,0.4));
-  }
-  .ccs-pin.azul    { fill: #004f9f; filter: drop-shadow(0 0 5px rgba(0,79,159,0.4)); }
-  .ccs-pin.verde   { fill: #5C7A2E; filter: drop-shadow(0 0 5px rgba(90,122,30,0.4)); }
-  .ccs-pin.laranja { fill: #E67817; filter: drop-shadow(0 0 5px rgba(230,120,23,0.4)); }
-  .ccs-pulse {
-    fill: #E67817;
-    animation: csPulse 2s ease-out infinite;
-    transform-origin: center;
-  }
-  .ccs-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    fill: rgba(26,26,23,0.55);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .ccs-tag.azul    { fill: #004f9f; }
-  .ccs-tag.verde   { fill: #5C7A2E; }
-  .ccs-tag.laranja { fill: #E67817; }
-
-  /* Top-right meta tag */
-  .cc-meta-tr {
-    position: absolute;
-    top: 92px;
-    right: 48px;
-    z-index: 4;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: rgba(26,26,23,0.55);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .cc-meta-tl {
-    position: absolute;
-    top: 92px;
-    left: max(48px, calc(50% - var(--max-w) / 2 + 48px));
-    z-index: 4;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: rgba(26,26,23,0.55);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .cc-meta-tl .cc-meta-tagline {
-    text-transform: none;
-    letter-spacing: 0.02em;
-    font-size: 11px;
-    line-height: 1.55;
-    color: rgba(26,26,23,0.7);
-    max-width: 380px;
-  }
-  .cc-meta-br {
-    position: absolute;
-    bottom: 32px;
-    right: 48px;
-    z-index: 4;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: rgba(26,26,23,0.55);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .cc-meta-br .cc-pulse-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #E67817;
-    box-shadow: 0 0 0 0 rgba(230,120,23,0.6);
-    animation: pulseDot 2s ease-out infinite;
-  }
-  .hero[data-variant="cinema"] .hero-inner {
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    position: relative;
-    display: block;
-    min-height: 100vh;
-  }
-  .cinema-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .cinema-bg img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    filter: contrast(1.05) saturate(0.7) brightness(0.55);
-    animation: cinemaZoom 16s ease-in-out infinite alternate;
-  }
-  @keyframes cinemaZoom {
-    from { transform: scale(1); }
-    to   { transform: scale(1.08); }
-  }
-  .cinema-vignette {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, rgba(13,14,11,0.35) 0%, rgba(13,14,11,0.15) 40%, rgba(13,14,11,0.85) 95%),
-      linear-gradient(90deg, rgba(13,14,11,0.7) 0%, rgba(13,14,11,0.1) 55%, transparent 100%);
-    z-index: 1;
-  }
-  .hero[data-variant="cinema"] .hero-content {
-    max-width: var(--max-w);
-    margin: 0 auto;
-    padding: 0 48px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    z-index: 3;
-    position: relative;
-    color: #fff;
-  }
-  .hero[data-variant="cinema"] .hero-title { color: #fff; }
-  .hero[data-variant="cinema"] .hero-title .t-verde   { color: #b8d674; }
-  .hero[data-variant="cinema"] .hero-title .t-laranja { color: var(--laranja); }
-  .hero[data-variant="cinema"] .hero-sub  { color: rgba(255,255,255,0.7); }
-  .hero[data-variant="cinema"] .hero-eyebrow span { color: var(--laranja); }
-  .hero[data-variant="cinema"] .hero-eyebrow-line  { background: var(--laranja); }
-  .hero[data-variant="cinema"] .btn-ghost {
-    color: #fff;
-    border-color: rgba(255,255,255,0.25);
-  }
-  .hero[data-variant="cinema"] .btn-ghost:hover { border-color: rgba(255,255,255,0.55); }
-
-  /* Cinema overlay diagram — animated signal lines */
-  .cinema-signals {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .cinema-signals svg { width: 100%; height: 100%; display: block; }
-  .cs-line {
-    stroke: rgba(247,108,0,0.55);
-    stroke-width: 1;
-    fill: none;
-    stroke-dasharray: 6 8;
-    animation: dashShift 3s linear infinite;
-  }
-  .cs-line.azul    { stroke: rgba(120,180,230,0.7); }
-  .cs-line.verde   { stroke: rgba(184,214,116,0.7); }
-  .cs-line.laranja { stroke: rgba(247,140,40,0.75); }
-  .cs-line.guide   { stroke: rgba(255,255,255,0.18); stroke-dasharray: none; }
-  @keyframes dashShift {
-    to { stroke-dashoffset: -56; }
-  }
-  .cs-pin {
-    fill: var(--laranja);
-    filter: drop-shadow(0 0 6px rgba(247,108,0,0.6));
-  }
-  .cs-pin.azul    { fill: #78b4e6; filter: drop-shadow(0 0 6px rgba(120,180,230,0.55)); }
-  .cs-pin.verde   { fill: #b8d674; filter: drop-shadow(0 0 6px rgba(184,214,116,0.5)); }
-  .cs-pin.laranja { fill: var(--laranja); filter: drop-shadow(0 0 6px rgba(247,108,0,0.6)); }
-  .cs-pulse {
-    fill: var(--laranja);
-    animation: csPulse 2s ease-out infinite;
-    transform-origin: center;
-  }
-  @keyframes csPulse {
-    0%   { transform: scale(0.5); opacity: 0.7; }
-    100% { transform: scale(2.6); opacity: 0; }
-  }
-  .cs-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    fill: rgba(255,255,255,0.55);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .cs-tag.azul    { fill: #78b4e6; }
-  .cs-tag.verde   { fill: #b8d674; }
-  .cs-tag.laranja { fill: var(--laranja); }
-
-  /* Cinema corner overlays */
-  .cinema-meta {
-    position: absolute;
-    z-index: 4;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .cinema-meta.tl { top: 92px; left: 48px; }
-  .cinema-meta.tr { top: 92px; right: 48px; text-align: right; }
-  .cinema-meta.br { bottom: 32px; right: 48px; text-align: right; display: flex; gap: 16px; align-items: center; }
-  .cinema-meta .pulse-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--laranja);
-    box-shadow: 0 0 0 0 rgba(247,108,0,0.6);
-    animation: pulseDot 2s ease-out infinite;
-  }
-  @keyframes pulseDot {
-    0%   { box-shadow: 0 0 0 0 rgba(247,108,0,0.6); }
-    100% { box-shadow: 0 0 0 12px rgba(247,108,0,0); }
-  }
-
-  /* ════════════════════════════════════════════════════════════════
-     HERO — 20 NEW ANIMATED VARIANTS
-     All share a common .hv-* container system: full-bleed canvas
-     behind the shared content. Each variant lights up via
-     .hero[data-variant="<name>"] selectors.
-     Brand palette mapped:
-       --azul    #004f9f  (Sistema)
-       --verde   #5a7a1e  (Sustentabilidade)
-       --laranja #F76C00  (Inovação)
-     ════════════════════════════════════════════════════════════════ */
+  /* ── HERO · tipografia cinética (hv-typo) + foto de fundo ── */
 
   /* shared canvas + content layer for new variants */
   .hv-canvas {
@@ -654,6 +173,10 @@
     overflow: hidden;
     pointer-events: none;
     display: none;
+  }
+  @keyframes cinemaZoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.08); }
   }
   .hv-photo img {
     width: 100%;
@@ -691,48 +214,6 @@
         rgba(255,180,90,0) 70%);
     mix-blend-mode: multiply;
   }
-  /* Dark bridge — already blue-toned + dark. Use minimal filter, anchor low. */
-  .hero[data-hero-bg="ponte-escura"] .hv-photo img {
-    filter: brightness(1) contrast(1.04) saturate(1);
-    object-position: center 60%;
-  }
-  /* Dark bridge variant — invert text/veil to a cinematic dark register */
-  .hero[data-hero-bg="ponte-escura"] { background: #0d141c; }
-  .hero[data-variant^="hv-"][data-hero-bg="ponte-escura"][data-bg-photo="on"] .hv-veil {
-    background:
-      linear-gradient(90deg,
-        rgba(13,20,28,0.92) 0%,
-        rgba(13,20,28,0.78) 28%,
-        rgba(13,20,28,0.40) 55%,
-        rgba(13,20,28,0.10) 78%,
-        rgba(13,20,28,0)    100%),
-      linear-gradient(180deg,
-        rgba(13,20,28,0.20) 0%,
-        rgba(13,20,28,0)    25%,
-        rgba(13,20,28,0)    72%,
-        rgba(13,20,28,0.55) 100%);
-  }
-  /* Dark bridge — text recoloring */
-  .hero[data-hero-bg="ponte-escura"] .hero-title              { color: #f4f4f0; }
-  .hero[data-hero-bg="ponte-escura"] .hero-title .t-verde     { color: #b8d674; }
-  .hero[data-hero-bg="ponte-escura"] .hero-title .t-azul      { color: #78b4e6; }
-  .hero[data-hero-bg="ponte-escura"] .hero-title .t-laranja   { color: var(--laranja); }
-  .hero[data-hero-bg="ponte-escura"] .hero-sub                { color: rgba(244,244,240,0.7); }
-  .hero[data-hero-bg="ponte-escura"] .hero-eyebrow span       { color: var(--laranja); }
-  .hero[data-hero-bg="ponte-escura"] .hero-eyebrow-line       { background: var(--laranja); }
-  .hero[data-hero-bg="ponte-escura"] .pontte-acronym          { color: rgba(244,244,240,0.7); }
-  .hero[data-hero-bg="ponte-escura"] .pontte-acronym b        { color: #b8d674; }
-  .hero[data-hero-bg="ponte-escura"] .pontte-acronym span     { color: rgba(244,244,240,0.7) !important; }
-  .hero[data-hero-bg="ponte-escura"] .btn-ghost               { color: #f4f4f0; border-color: rgba(244,244,240,0.22); }
-  .hero[data-hero-bg="ponte-escura"] .btn-ghost:hover         { border-color: rgba(244,244,240,0.55); }
-  /* Dark bridge — corner meta + animated typo + tagged labels */
-  .hero[data-hero-bg="ponte-escura"] .cc-meta-tl,
-  .hero[data-hero-bg="ponte-escura"] .cc-meta-tr,
-  .hero[data-hero-bg="ponte-escura"] .cc-meta-br              { color: rgba(244,244,240,0.55); }
-  .hero[data-hero-bg="ponte-escura"] .hvty-word.w1            { color: rgba(120,180,230,0.18); }
-  .hero[data-hero-bg="ponte-escura"] .hvty-word.w2            { color: rgba(184,214,116,0.18); }
-  .hero[data-hero-bg="ponte-escura"] .hvty-word.w3            { color: rgba(247,108,0,0.22); }
-  .hero[data-hero-bg="ponte-escura"] .hvty-word.w4            { color: rgba(244,244,240,0.14); }
   /* Show photo only when bg-photo is on AND a hv- variant is active */
   .hero[data-variant^="hv-"][data-bg-photo="on"] .hv-photo { display: block; }
 
@@ -808,263 +289,6 @@
     position: relative;
   }
 
-  /* ── 01 · constelacao — points connected forming brand mesh ── */
-  .hv-constelacao .hvc-link  { stroke: rgba(0,79,159,0.3); stroke-width: 1; }
-  .hv-constelacao .hvc-node  { transform-origin: center; transform-box: fill-box; }
-  .hv-constelacao .hvc-node.azul    { fill: var(--azul);    animation: constellationPop 4s ease-in-out infinite; }
-  .hv-constelacao .hvc-node.verde   { fill: var(--verde-l); animation: constellationPop 4s ease-in-out infinite 0.7s; }
-  .hv-constelacao .hvc-node.laranja { fill: var(--laranja); animation: constellationPop 4s ease-in-out infinite 1.4s; }
-  .hv-constelacao .hvc-scan {
-    fill: none;
-    stroke: var(--laranja);
-    stroke-width: 2;
-    stroke-dasharray: 4 6;
-    opacity: 0.7;
-    animation: scanSweep 8s linear infinite;
-    transform-origin: 50% 50%;
-  }
-  @keyframes constellationPop {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 currentColor); }
-    50%      { transform: scale(1.6); filter: drop-shadow(0 0 8px currentColor); }
-  }
-  @keyframes scanSweep {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-
-  /* ── 02 · ondas — concentric waves pulsing from a center ── */
-  .hv-ondas .hvo-ring {
-    fill: none;
-    stroke-width: 1.5;
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: ondasExpand 4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
-    opacity: 0;
-  }
-  .hv-ondas .hvo-ring.azul    { stroke: var(--azul);    animation-delay: 0s; }
-  .hv-ondas .hvo-ring.verde   { stroke: var(--verde-l); animation-delay: 1.3s; }
-  .hv-ondas .hvo-ring.laranja { stroke: var(--laranja); animation-delay: 2.6s; }
-  @keyframes ondasExpand {
-    0%   { transform: scale(0.05); opacity: 0; stroke-width: 4; }
-    20%  { opacity: 1; }
-    100% { transform: scale(2.5); opacity: 0; stroke-width: 0.5; }
-  }
-  .hv-ondas .hvo-core { fill: var(--laranja); animation: pulseDotInline 2s ease-out infinite; }
-  @keyframes pulseDotInline {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50%      { transform: scale(1.3); opacity: 0.7; }
-  }
-
-  /* ── 03 · fluxo — vertical streams of energy falling ── */
-  .hv-fluxo .hvf-stream {
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-dasharray: 20 200;
-    animation: fluxoFall 4s linear infinite;
-  }
-  .hv-fluxo .hvf-stream.azul    { stroke: var(--azul);    }
-  .hv-fluxo .hvf-stream.verde   { stroke: var(--verde-l); }
-  .hv-fluxo .hvf-stream.laranja { stroke: var(--laranja); }
-  @keyframes fluxoFall {
-    from { stroke-dashoffset: 220;  opacity: 0; }
-    20%  { opacity: 0.9; }
-    80%  { opacity: 0.9; }
-    to   { stroke-dashoffset: -220; opacity: 0; }
-  }
-
-  /* ── 04 · rede-malha — grid of brand diamonds pulsing in waves ── */
-  .hv-redemalha .hvm-diamond {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: diamondWave 3.5s ease-in-out infinite;
-  }
-  @keyframes diamondWave {
-    0%, 100% { opacity: 0.15; transform: scale(0.85); }
-    50%      { opacity: 1;    transform: scale(1.05); }
-  }
-
-  /* ── 05 · horizon — sun rising / linha do horizonte ── */
-  .hv-horizon .hvh-sun {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: sunRise 12s ease-in-out infinite alternate;
-  }
-  @keyframes sunRise {
-    from { transform: translateY(60px) scale(0.9); }
-    to   { transform: translateY(-30px) scale(1.05); }
-  }
-  .hv-horizon .hvh-line {
-    stroke-dasharray: 8 6;
-    animation: dashShift 4s linear infinite;
-  }
-  .hv-horizon .hvh-ray {
-    transform-origin: 50% 100%;
-    transform-box: fill-box;
-    animation: rayFlicker 3s ease-in-out infinite;
-  }
-  @keyframes rayFlicker {
-    0%, 100% { opacity: 0.25; }
-    50%      { opacity: 0.7;  }
-  }
-
-  /* ── 06 · circuito — circuit traces with pulses running through ── */
-  .hv-circuito .hvk-trace {
-    fill: none;
-    stroke-width: 1.2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .hv-circuito .hvk-trace.azul    { stroke: rgba(0,79,159,0.4); }
-  .hv-circuito .hvk-trace.verde   { stroke: rgba(90,122,30,0.4);  }
-  .hv-circuito .hvk-trace.laranja { stroke: rgba(247,108,0,0.4);  }
-  .hv-circuito .hvk-pulse {
-    fill: none;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 12 600;
-    animation: circuitRun 4s linear infinite;
-  }
-  .hv-circuito .hvk-pulse.azul    { stroke: var(--azul);    filter: drop-shadow(0 0 6px var(--azul));    }
-  .hv-circuito .hvk-pulse.verde   { stroke: var(--verde-l); filter: drop-shadow(0 0 6px var(--verde-l)); animation-delay: 1.3s; }
-  .hv-circuito .hvk-pulse.laranja { stroke: var(--laranja); filter: drop-shadow(0 0 6px var(--laranja)); animation-delay: 2.6s; }
-  @keyframes circuitRun {
-    from { stroke-dashoffset: 600; }
-    to   { stroke-dashoffset: 0; }
-  }
-  .hv-circuito .hvk-pad {
-    fill: var(--offwhite);
-    stroke-width: 2;
-  }
-  .hv-circuito .hvk-pad.azul    { stroke: var(--azul); }
-  .hv-circuito .hvk-pad.verde   { stroke: var(--verde-l); }
-  .hv-circuito .hvk-pad.laranja { stroke: var(--laranja); }
-
-  /* ── 07 · eco-pulse — 3 expanding rings (brand) ── */
-  .hv-ecopulse .hvep-ring {
-    fill: none;
-    stroke-width: 2;
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: ecoPulse 3s ease-out infinite;
-    opacity: 0;
-  }
-  .hv-ecopulse .hvep-ring.azul    { stroke: var(--azul);    }
-  .hv-ecopulse .hvep-ring.verde   { stroke: var(--verde-l); animation-delay: 1s; }
-  .hv-ecopulse .hvep-ring.laranja { stroke: var(--laranja); animation-delay: 2s; }
-  @keyframes ecoPulse {
-    0%   { transform: scale(0.1); opacity: 0; stroke-width: 5; }
-    15%  { opacity: 1; }
-    100% { transform: scale(3); opacity: 0; stroke-width: 0.5; }
-  }
-  .hv-ecopulse .hvep-core {
-    fill: var(--laranja);
-    filter: drop-shadow(0 0 12px var(--laranja));
-  }
-
-  /* ── 08 · terminal — typing text with cursor ── */
-  .hv-terminal .hvt-frame {
-    position: absolute;
-    top: 50%;
-    right: 6%;
-    transform: translateY(-50%);
-    width: 34vw;
-    max-width: 420px;
-    background: rgba(13,14,11,0.92);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 6px;
-    padding: 16px 18px 18px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: rgba(232,232,228,0.85);
-    line-height: 1.7;
-    box-shadow: 0 18px 60px rgba(13,14,11,0.18);
-    z-index: 2;
-  }
-  .hv-terminal .hvt-bar {
-    display: flex; gap: 6px; margin-bottom: 12px;
-  }
-  .hv-terminal .hvt-bar span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.18); }
-  .hv-terminal .hvt-bar span:first-child { background: var(--laranja); }
-  .hv-terminal .hvt-line { white-space: nowrap; overflow: hidden; }
-  .hv-terminal .hvt-line .c-azul    { color: #78b4e6; }
-  .hv-terminal .hvt-line .c-verde   { color: #b8d674; }
-  .hv-terminal .hvt-line .c-laranja { color: var(--laranja); }
-  .hv-terminal .hvt-line .c-mute    { color: rgba(232,232,228,0.4); }
-  .hv-terminal .hvt-cursor {
-    display: inline-block;
-    width: 7px; height: 13px;
-    background: var(--laranja);
-    margin-left: 2px;
-    vertical-align: middle;
-    animation: blink 1s step-end infinite;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
-  .hv-terminal .hvt-typed {
-    overflow: hidden;
-    white-space: nowrap;
-    animation: typeIn 3.5s steps(48, end) infinite;
-  }
-  @keyframes typeIn {
-    0%, 5%   { width: 0; }
-    50%, 95% { width: 100%; }
-    100%     { width: 0; }
-  }
-
-  /* ── 09 · isometric — isometric grid with towers lighting up ── */
-  .hv-isometric .hvi-tile { fill: rgba(26,26,23,0.04); stroke: rgba(26,26,23,0.1); stroke-width: 0.5; }
-  .hv-isometric .hvi-tower {
-    transform-origin: center bottom;
-    transform-box: fill-box;
-    animation: towerLight 4s ease-in-out infinite;
-  }
-  .hv-isometric .hvi-tower.azul    { fill: var(--azul);    animation-delay: 0s; }
-  .hv-isometric .hvi-tower.verde   { fill: var(--verde-l); animation-delay: 1.3s; }
-  .hv-isometric .hvi-tower.laranja { fill: var(--laranja); animation-delay: 2.6s; }
-  @keyframes towerLight {
-    0%, 100% { opacity: 0.4; }
-    50%      { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
-  }
-
-  /* ── 10 · aurora — aurora-style flowing gradient ── */
-  .hv-aurora .hva-blob {
-    mix-blend-mode: multiply;
-    filter: blur(40px);
-    animation: auroraDrift 14s ease-in-out infinite alternate;
-    transform-origin: center;
-    transform-box: fill-box;
-  }
-  .hv-aurora .hva-blob.azul    { fill: rgba(0,79,159,0.55);  }
-  .hv-aurora .hva-blob.verde   { fill: rgba(90,122,30,0.45);   animation-delay: -4s; }
-  .hv-aurora .hva-blob.laranja { fill: rgba(247,108,0,0.45);   animation-delay: -8s; }
-  @keyframes auroraDrift {
-    0%   { transform: translate(0,0) scale(1); }
-    33%  { transform: translate(80px, -40px) scale(1.2); }
-    66%  { transform: translate(-60px, 60px) scale(0.9); }
-    100% { transform: translate(40px, 30px) scale(1.1); }
-  }
-
-  /* ── 11 · spark — random electric sparks ── */
-  .hv-spark .hvs-bolt {
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0;
-    animation: sparkFlash 5s ease-out infinite;
-    filter: drop-shadow(0 0 6px currentColor);
-  }
-  .hv-spark .hvs-bolt.azul    { stroke: var(--azul);    color: var(--azul);    }
-  .hv-spark .hvs-bolt.verde   { stroke: var(--verde-l); color: var(--verde-l); animation-delay: 1.5s; }
-  .hv-spark .hvs-bolt.laranja { stroke: var(--laranja); color: var(--laranja); animation-delay: 3s; }
-  @keyframes sparkFlash {
-    0%, 100% { opacity: 0; }
-    2%, 4%   { opacity: 1; }
-    6%       { opacity: 0; }
-    8%, 10%  { opacity: 1; }
-    12%      { opacity: 0; }
-  }
-
   /* ── 12 · typo-kinetic — large animated words ── */
   .hv-typo .hvty-word {
     position: absolute;
@@ -1088,162 +312,31 @@
     100% { opacity: 0; transform: translateX(-80px); }
   }
 
-  /* ── 13 · mosaico — tiled mosaic cascading colors ── */
-  .hv-mosaico .hvms-tile {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: mosaicCascade 5s ease-in-out infinite;
+  .cc-meta-tl {
+    position: absolute;
+    top: 92px;
+    left: max(48px, calc(50% - var(--max-w) / 2 + 48px));
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: rgba(26,26,23,0.55);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
-  @keyframes mosaicCascade {
-    0%, 100% { opacity: 0.1; }
-    50%      { opacity: 1; }
+  .cc-meta-tl .cc-meta-tagline {
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 11px;
+    line-height: 1.55;
+    color: rgba(26,26,23,0.7);
+    max-width: 380px;
   }
-
-  /* ── 14 · diamante-cosmico — orbiting brand diamonds ── */
-  .hv-diamante .hvd-orbit {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: orbitSpin 18s linear infinite;
-  }
-  .hv-diamante .hvd-orbit.r2 { animation-duration: 28s; animation-direction: reverse; }
-  .hv-diamante .hvd-orbit.r3 { animation-duration: 38s; }
-  @keyframes orbitSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  .hv-diamante .hvd-diamond {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: diamondSpin 6s ease-in-out infinite;
-  }
-  @keyframes diamondSpin {
-    0%, 100% { transform: rotate(0deg) scale(1); }
-    50%      { transform: rotate(180deg) scale(1.1); }
-  }
-
-  /* ── 15 · linha-tempo — horizontal timeline with traveling node ── */
-  .hv-timeline .hvtl-track { stroke: rgba(26,26,23,0.15); stroke-width: 1; fill: none; }
-  .hv-timeline .hvtl-progress {
-    stroke: var(--laranja);
-    stroke-width: 2;
-    fill: none;
-    stroke-dasharray: 1200;
-    stroke-dashoffset: 1200;
-    animation: timelineFill 6s ease-in-out infinite;
-  }
-  @keyframes timelineFill {
-    0%   { stroke-dashoffset: 1200; }
-    50%  { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: -1200; }
-  }
-  .hv-timeline .hvtl-node {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: nodeAppear 6s ease-in-out infinite;
-  }
-  .hv-timeline .hvtl-node.n1 { animation-delay: 0.5s; }
-  .hv-timeline .hvtl-node.n2 { animation-delay: 1.5s; }
-  .hv-timeline .hvtl-node.n3 { animation-delay: 2.5s; }
-  .hv-timeline .hvtl-node.n4 { animation-delay: 3.5s; }
-  @keyframes nodeAppear {
-    0%, 8%   { transform: scale(0); opacity: 0; }
-    12%, 88% { transform: scale(1); opacity: 1; }
-    100%     { transform: scale(0); opacity: 0; }
-  }
-
-  /* ── 16 · morse — pulsing morse-style bars ── */
-  .hv-morse .hvmr-bar {
-    transform-origin: left center;
-    transform-box: fill-box;
-    animation: morsePulse 0.8s ease-in-out infinite;
-  }
-  .hv-morse .hvmr-bar.b1 { animation-delay: 0s;    }
-  .hv-morse .hvmr-bar.b2 { animation-delay: 0.15s; }
-  .hv-morse .hvmr-bar.b3 { animation-delay: 0.3s;  }
-  .hv-morse .hvmr-bar.b4 { animation-delay: 0.45s; }
-  .hv-morse .hvmr-bar.b5 { animation-delay: 0.6s;  }
-  @keyframes morsePulse {
-    0%, 100% { opacity: 0.2; transform: scaleX(0.85); }
-    50%      { opacity: 1;   transform: scaleX(1); }
-  }
-
-  /* ── 17 · graph-live — oscillating live data line ── */
-  .hv-graph .hvg-grid line { stroke: rgba(26,26,23,0.06); stroke-width: 1; }
-  .hv-graph .hvg-line {
-    fill: none;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    filter: drop-shadow(0 0 4px currentColor);
-    animation: graphMorph 6s ease-in-out infinite alternate;
-  }
-  .hv-graph .hvg-line.azul    { stroke: var(--azul);    color: var(--azul);    }
-  .hv-graph .hvg-line.verde   { stroke: var(--verde-l); color: var(--verde-l); animation-delay: -2s; }
-  .hv-graph .hvg-line.laranja { stroke: var(--laranja); color: var(--laranja); animation-delay: -4s; }
-  .hv-graph .hvg-area {
-    animation: graphMorph 6s ease-in-out infinite alternate;
-  }
-  @keyframes graphMorph {
-    from { transform: translateY(0)     scaleY(1); }
-    to   { transform: translateY(-10px) scaleY(1.1); }
-  }
-  .hv-graph .hvg-tip {
-    fill: var(--laranja);
-    filter: drop-shadow(0 0 8px var(--laranja));
-    animation: tipDrift 6s ease-in-out infinite alternate;
-  }
-  @keyframes tipDrift {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(40px, -22px); }
-  }
-
-  /* ── 18 · particulas — drifting particles ── */
-  .hv-particulas .hvp-particle {
-    animation: particleDrift 18s ease-in-out infinite alternate;
-  }
-  .hv-particulas .hvp-particle.azul    { fill: var(--azul);    }
-  .hv-particulas .hvp-particle.verde   { fill: var(--verde-l); }
-  .hv-particulas .hvp-particle.laranja { fill: var(--laranja); }
-  @keyframes particleDrift {
-    0%   { transform: translate(0,0); opacity: 0.4; }
-    25%  { transform: translate(40px, -30px); opacity: 1; }
-    50%  { transform: translate(-30px, 40px); opacity: 0.7; }
-    75%  { transform: translate(20px, 60px); opacity: 0.9; }
-    100% { transform: translate(-40px, -20px); opacity: 0.4; }
-  }
-
-  /* ── 19 · eclipse — large sun with ring eclipse, brand colors ── */
-  .hv-eclipse .hve-disk {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: eclipsePass 18s linear infinite;
-  }
-  @keyframes eclipsePass {
-    from { transform: translateX(-200px); }
-    to   { transform: translateX(200px); }
-  }
-  .hv-eclipse .hve-corona {
-    animation: coronaGlow 4s ease-in-out infinite alternate;
-    transform-origin: center;
-    transform-box: fill-box;
-  }
-  @keyframes coronaGlow {
-    from { opacity: 0.4; transform: scale(1); }
-    to   { opacity: 1;   transform: scale(1.06); }
-  }
-
-  /* ── 20 · pixel-rain — brand pixels falling ── */
-  .hv-pixelrain .hvpr-pixel {
-    animation: pixelDrop 4s linear infinite;
-  }
-  .hv-pixelrain .hvpr-pixel.azul    { fill: var(--azul);    }
-  .hv-pixelrain .hvpr-pixel.verde   { fill: var(--verde-l); }
-  .hv-pixelrain .hvpr-pixel.laranja { fill: var(--laranja); }
-  @keyframes pixelDrop {
-    0%   { transform: translateY(-100px); opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 1; }
-    100% { transform: translateY(900px);  opacity: 0; }
+  .cc-meta-tl .cc-meta-loc {
+    letter-spacing: 0.16em;
+    color: rgba(26,26,23,0.5);
   }
 
   /* ── CUTOUT SECTION (pessoa + texto) ── */
@@ -1268,23 +361,6 @@
     user-select: none;
     white-space: nowrap;
     z-index: 1;
-  }
-  /* cutout image floats right or left, bleeds bottom */
-  .cutout-img-wrap {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    height: 88%;
-    z-index: 3;
-    pointer-events: none;
-  }
-  .cutout-img-wrap img {
-    height: 100%;
-    width: auto;
-    max-width: 400px;
-    object-fit: cover;
-    object-position: top center;
-    display: block;
   }
 
   .hero-eyebrow {
@@ -1367,13 +443,6 @@
     inset: 0;
     pointer-events: none;
     overflow: hidden;
-  }
-  .para-layer {
-    position: absolute;
-    inset: -10%;
-    width: 120%;
-    height: 120%;
-    will-change: transform;
   }
   .para-dots {
     background-image: radial-gradient(circle, rgba(26,26,23,0.1) 1px, transparent 1px);
@@ -1471,7 +540,7 @@
   .hero-title .t-azul       { color: #004f9f; }
   .cta-title .t-azul        { color: #6aa3df; }
   .infra-title .t-azul      { color: #6aa3df; }
-  .iv2-title .t-azul, .iv4-title .t-azul { color: #6aa3df; }
+  .iv2-title .t-azul { color: #6aa3df; }
 
   /* ── PONTTE acronym expansion (under hero eyebrow / above title) ── */
   .pontte-acronym {
@@ -1489,8 +558,6 @@
     font-weight: 700;
     letter-spacing: 0.04em;
   }
-  .hero[data-variant="cinema"] .pontte-acronym       { color: rgba(255,255,255,0.7); }
-  .hero[data-variant="cinema"] .pontte-acronym b     { color: #6aa3df; }
   .hero[data-variant^="hv-"] .pontte-acronym         { color: var(--texto2); }
   .hero[data-variant^="hv-"] .pontte-acronym b       { color: var(--verde-l); }
 
@@ -1574,150 +641,11 @@
   }
   .linhas-header .section-title { margin-bottom: 0; }
 
-  /* Old 5-column grid (kept for fallback) */
-  .linhas-grid--cols {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1px;
-    background: var(--borda);
-    border: 1px solid var(--borda);
-    overflow: hidden;
-    border-radius: 3px;
-  }
-
-  /* ── NEW · editorial list layout ── */
   .linhas-grid {
     display: flex;
     flex-direction: column;
     border-top: 1px solid var(--borda);
   }
-  .linha-row {
-    display: grid;
-    grid-template-columns: 64px minmax(220px, 0.9fr) 1.6fr 120px;
-    gap: 32px;
-    align-items: start;
-    padding: 36px 0;
-    border-bottom: 1px solid var(--borda);
-    position: relative;
-    transition: background 0.25s;
-  }
-  .linha-row:hover { background: rgba(0,0,0,0.015); }
-  .linha-row::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 3px;
-    height: 100%;
-    background: var(--lc, var(--laranja));
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 0.35s cubic-bezier(.4,.1,.3,1);
-  }
-  .linha-row:hover::before { transform: scaleY(1); }
-  .linha-row .lr-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--lc, var(--laranja));
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    padding-top: 2px;
-  }
-  .linha-row .lr-head {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .linha-row .lr-icon {
-    width: 40px; height: 40px;
-    color: var(--lc, var(--laranja));
-  }
-  .linha-row .lr-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--texto);
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    margin: 0;
-  }
-  .linha-row .lr-desc {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--texto2);
-    max-width: 640px;
-  }
-  .linha-row .lr-desc b {
-    color: var(--texto);
-    font-weight: 600;
-  }
-  .linha-row .lr-action {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--texto3);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    text-decoration: none;
-    text-align: right;
-    padding-top: 4px;
-    transition: color 0.2s;
-    white-space: nowrap;
-  }
-  .linha-row:hover .lr-action { color: var(--lc, var(--laranja)); }
-  @media (max-width: 900px) {
-    .linha-row {
-      grid-template-columns: 40px 1fr;
-      gap: 18px;
-    }
-    .linha-row .lr-head { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 16px; }
-    .linha-row .lr-desc { grid-column: 1 / -1; }
-    .linha-row .lr-action { grid-column: 1 / -1; text-align: left; }
-  }
-
-  .linha-card {
-    background: var(--offwhite);
-    padding: 32px 24px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-height: 300px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.25s;
-  }
-  .linha-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--lc, var(--verde-l));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s;
-  }
-  .linha-card:hover { background: var(--bg); }
-  .linha-card:hover::after { transform: scaleX(1); }
-
-  .linha-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--lc, var(--verde-l));
-    opacity: 0.7;
-  }
-  .linha-icon { width: 40px; height: 40px; }
-  .linha-title { font-size: 15px; font-weight: 600; color: var(--texto); line-height: 1.25; margin-top: auto; }
-  .linha-desc { font-size: 12px; line-height: 1.6; color: var(--texto3); }
-  .linha-arrow {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--lc, var(--verde-l));
-    opacity: 0;
-    transition: opacity 0.25s;
-    margin-top: auto;
-  }
-  .linha-card:hover .linha-arrow { opacity: 1; }
 
   /* ── INFRA ── */
   .infra {
@@ -1902,59 +830,128 @@
   footer {
     background: var(--texto);
     border-top: 1px solid rgba(255,255,255,0.06);
-    padding: 56px 0 40px;
+    padding: 56px 0 28px;
+    color: rgba(250,250,247,0.5);
   }
-  .footer-inner {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 60px;
-    margin-bottom: 48px;
+  .footer-h5 {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(250,250,247,0.32); margin-bottom: 14px;
   }
-  .footer-brand img:not(.footer-logo-img) { height: 36px; margin-bottom: 18px; }
-  .footer-brand p { font-size: 13px; line-height: 1.7; color: rgba(250,250,247,0.35); max-width: 260px; }
-  .footer-addresses-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 36px;
-    align-items: start;
-    padding: 22px 0 4px;
-    margin-top: 8px;
+  .footer-logo-img { height: 48px; width: auto; display: block; margin-bottom: 16px; }
+  .footer-tagline {
+    font-size: 13px; line-height: 1.65;
+    color: rgba(250,250,247,0.5);
+    max-width: 280px;
+  }
+  .footer-nav {
+    list-style: none; display: grid; gap: 8px; padding: 0; margin: 0;
+  }
+  .footer-nav a, .footer-link {
+    font-size: 13px; color: rgba(250,250,247,0.55);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .footer-nav a:hover, .footer-link:hover { color: rgba(250,250,247,0.95); }
+
+  .footer-addr-block { font-size: 12px; line-height: 1.55; color: rgba(250,250,247,0.5); }
+  .footer-addr-block b { color: rgba(250,250,247,0.85); font-weight: 600; display: block; margin-bottom: 4px; }
+  .footer-addr-stack { display: grid; gap: 16px; }
+
+  /* Social */
+  .footer-social { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .footer-social a {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .footer-social a:hover { background: var(--laranja); transform: translateY(-1px); }
+  .footer-social svg { width: 15px; height: 15px; fill: #fff; }
+
+  /* ── Instagram lançamento — footer: selo com legenda ── */
+  .footer-social[data-ig-style="selo"] { gap: 12px; }
+  .footer-social[data-ig-style="selo"]::before {
+    content: "Siga-nos";
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(250,250,247,0.45);
+  }
+  /* mantém o ícone padrão (escuro/translúcido); só vira laranja no hover */
+  .footer-social-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(250,250,247,0.32);
+    margin-right: 4px;
+  }
+
+  /* PONTTE meaning strip */
+  .footer-meaning {
+    font-size: 12.5px; line-height: 1.7;
+    color: rgba(250,250,247,0.45);
+    padding: 18px 0;
     border-top: 1px solid rgba(255,255,255,0.06);
   }
-  .footer-addr-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(250,250,247,0.3); padding-top: 4px;
+  .footer-meaning b.brand { color: #fff; font-weight: 700; letter-spacing: 0.02em; }
+
+  /* Bottom strip (copyright + partners + privacy) */
+  .footer-strip {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 18px; flex-wrap: wrap;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.06);
   }
-  .footer-addr-items {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .footer-strip-left, .footer-strip-right {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    font-size: 11px; color: rgba(250,250,247,0.3);
+  }
+  .footer-priv {
+    font-size: 11px; color: rgba(250,250,247,0.4);
+    text-decoration: none; letter-spacing: 0.01em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .footer-priv:hover { color: rgba(250,250,247,0.9); border-bottom-color: rgba(255,255,255,0.5); }
+  .fp-logo { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(250,250,247,0.28); text-transform: uppercase; }
+  .footer-sep { color: rgba(250,250,247,0.12); }
+
+  /* ════════════════════════════════════════
+     V4 — LINHA HORIZONTAL
+     Top bar: logo | nav inline | social
+     Below: addresses row
+     ════════════════════════════════════════ */
+  footer[data-footer-variant="v4"] { padding: 36px 0 24px; }
+  footer[data-footer-variant="v4"] .footer-topbar {
+    display: flex; align-items: center; justify-content: space-between;
     gap: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
   }
-  .footer-addr {
-    font-size: 12px; line-height: 1.6; color: rgba(250,250,247,0.45);
+  footer[data-footer-variant="v4"] .footer-topbar .footer-logo-img { height: 36px; margin: 0; }
+  footer[data-footer-variant="v4"] .footer-nav-inline {
+    display: flex; flex-wrap: wrap; gap: 6px 22px;
+    list-style: none; padding: 0; margin: 0;
   }
-  .footer-addr b { color: rgba(250,250,247,0.8); font-weight: 600; }
-  @media (max-width: 768px) {
-    .footer-addresses-row { grid-template-columns: 1fr; gap: 14px; }
-    .footer-addr-items { grid-template-columns: 1fr; gap: 14px; }
+  footer[data-footer-variant="v4"] .footer-nav-inline a {
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(250,250,247,0.55); text-decoration: none; transition: color 0.2s;
   }
-  .footer-col h5 {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(250,250,247,0.3); margin-bottom: 18px;
+  footer[data-footer-variant="v4"] .footer-nav-inline a:hover { color: #fff; }
+  footer[data-footer-variant="v4"] .footer-mid {
+    display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 36px;
+    margin-bottom: 22px; align-items: start;
   }
-  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .footer-col ul a { font-size: 13px; color: rgba(250,250,247,0.45); text-decoration: none; transition: color 0.2s; }
-  .footer-col ul a:hover { color: rgba(250,250,247,0.85); }
-  .footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 28px;
-    border-top: 1px solid rgba(255,255,255,0.06);
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    footer[data-footer-variant="v4"] .footer-mid { grid-template-columns: 1fr; gap: 32px; }
+    footer[data-footer-variant="v4"] .footer-topbar { flex-direction: column; align-items: flex-start; gap: 14px; }
   }
-  .footer-bottom p { font-size: 11px; color: rgba(250,250,247,0.2); }
-  .footer-partners { display: flex; gap: 20px; align-items: center; }
-  .fp-logo { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(250,250,247,0.2); text-transform: uppercase; }
 
   /* ── ANIMATIONS ── */
   .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -1964,30 +961,28 @@
   @media (max-width: 1024px) {
     .container, .nav-inner { padding-left: 24px; padding-right: 24px; }
     .hero-inner { padding-left: 24px; padding-right: 24px; }
-    .hero[data-variant="cinema"] .hero-content { padding-left: 24px; padding-right: 24px; }
-    .cinema-meta.tl, .cinema-meta.tr { left: 24px; right: 24px; }
-    .cinema-meta.br { right: 24px; }
-    .cc-meta-tr { right: 24px; }
-    .cc-meta-br { right: 24px; }
-    .hero[data-variant="cinema-claro"] .hero-content { padding-left: 24px; padding-right: 24px; }
     .cc-meta-tl { left: 24px; }
-    .kchip { display: none; }
-    .hero-diagram { opacity: 0.4; }
     section { padding: 72px 0; }
-    .linhas-grid--cols { grid-template-columns: repeat(2, 1fr); }
     .infra-inner { grid-template-columns: 1fr; gap: 48px; }
     .servicos-grid { grid-template-columns: 1fr 1fr; }
     .parceiros-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-inner { grid-template-columns: 1fr 1fr; gap: 36px; }
-    .cutout-img-wrap { display: none; }
     .cutout-inner { padding-left: 24px; padding-right: 24px; }
     .cutout-bg-text { left: 24px; font-size: 80px; }
     .nav-social { display: none; }
+    /* Compacta o menu para não quebrar linha antes do hamburger entrar (≤767px) */
+    .nav-links { gap: 18px; }
+    .nav-links a { letter-spacing: 0.06em; }
+    .nav-cta { padding: 10px 16px !important; }
+  }
+  @media (max-width: 900px) {
+    /* Última compressão antes do hamburger: ainda mais apertado */
+    .nav-links { gap: 12px; }
+    .nav-links a { font-size: 11px; letter-spacing: 0.04em; }
   }
   @media (max-width: 640px) {
     .hero-title { font-size: 44px; }
     .hero-actions { flex-direction: column; align-items: flex-start; }
-    .linhas-grid--cols { grid-template-columns: 1fr; }
     .servicos-grid { grid-template-columns: 1fr; }
     .parceiros-grid { grid-template-columns: 1fr; }
     .cta-actions { flex-direction: column; align-items: center; }
@@ -1997,21 +992,11 @@
   }
 
   /* ════════════════════════════════════════════════════════════════
-     INFRA — 20 VARIANT INTERFACES (toggleable via Tweaks)
+     INFRA — cinema chips layout
      ════════════════════════════════════════════════════════════════ */
   .infra-section { padding: 0 !important; }
-  .infra-host > .iv { display: none; }
-  .infra-host[data-active="1"] > .iv-1,
-  .infra-host[data-active="2"] > .iv-2,
-  .infra-host[data-active="3"] > .iv-3,
-  .infra-host[data-active="4"] > .iv-4 { display: block; }
-  .iv .ic { display: inline-block; width: 28px; height: 28px; flex-shrink: 0; }
+  .iv-2 .ic { display: inline-block; width: 28px; height: 28px; flex-shrink: 0; }
 
-  /* ── V1 ORIGINAL — current green grid ── */
-  .iv-1 { background: var(--verde); position: relative; overflow: hidden; padding: 100px 0; }
-  .iv-1::before { content: ''; position: absolute; inset: 0; background: linear-gradient(145deg, rgba(0,0,0,0.3) 0%, transparent 55%); pointer-events: none; }
-
-  /* ── V2 CINEMA — UFF blue, oversized type, chip grid ── */
   .iv-2 { background: #004f9f; color: #fff; padding: 120px 0 100px; position: relative; overflow: hidden; }
   .iv-2::before { content: ''; position: absolute; inset: 0; background: radial-gradient(900px at 80% 30%, rgba(247,108,0,0.22), transparent 60%), radial-gradient(700px at 10% 90%, rgba(255,255,255,0.06), transparent 60%); pointer-events: none; }
   .iv-2-in { max-width: var(--max-w); margin: 0 auto; padding: 0 48px; position: relative; }
@@ -2029,90 +1014,14 @@
   .iv-2 .iv2-eb .n { color: var(--laranja); }
   .iv-2 .iv2-eb .ln { width: 36px; height: 1px; background: var(--laranja); }
 
-  /* ── V3 MAGAZINE ASYMMETRIC ── */
-  .iv-3 { background: var(--bg); color: var(--texto); padding: 110px 0 100px; position: relative; overflow: hidden; }
-  .iv-3-in { max-width: 1400px; margin: 0 auto; padding: 0 48px; position: relative; }
-  .iv-3 .iv3-monogram { position: relative; line-height: 0.82; letter-spacing: -0.05em; margin-bottom: 24px; }
-  .iv-3 .iv3-monogram .a { font-size: clamp(96px, 14vw, 240px); font-weight: 800; color: var(--laranja); display: block; }
-  .iv-3 .iv3-monogram .b { font-size: clamp(72px, 11vw, 200px); font-weight: 800; -webkit-text-stroke: 2px var(--verde); color: transparent; display: block; padding-left: 0.2em; margin-top: -0.06em; }
-  .iv-3 .iv3-eb { position: absolute; top: 0; right: 0; display: inline-flex; gap: 12px; align-items: center; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: var(--texto2); text-transform: uppercase; }
-  .iv-3 .iv3-eb .n { color: var(--laranja); font-weight: 700; }
-  .iv-3 .iv3-eb .ln { width: 32px; height: 1px; background: var(--laranja); }
-  .iv-3 .iv3-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 28px; margin-top: 40px; align-items: start; }
-  .iv-3 .iv3-intro h3 { font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -0.015em; margin-bottom: 16px; }
-  .iv-3 .iv3-intro p { font-size: 14px; line-height: 1.7; color: var(--texto2); }
-  .iv-3 .iv3-card { background: var(--offwhite); border: 1px solid var(--borda); padding: 28px 26px; display: flex; flex-direction: column; gap: 12px; }
-  .iv-3 .iv3-card .ic { color: var(--laranja); margin-bottom: 8px; }
-  .iv-3 .iv3-card h4 { font-size: 17px; font-weight: 600; }
-  .iv-3 .iv3-card p { font-size: 13px; line-height: 1.55; color: var(--texto2); }
-  .iv-3 .iv3-card.tall { grid-row: span 2; background: var(--verde); color: #fff; min-height: 320px; }
-  .iv-3 .iv3-card.tall .ic { color: var(--laranja); }
-  .iv-3 .iv3-card.tall h4 { font-size: 22px; }
-  .iv-3 .iv3-card.tall p { color: rgba(255,255,255,0.7); }
-  .iv-3 .iv3-card.dark { background: #0a0a09; color: #fff; }
-  .iv-3 .iv3-card.dark h4 { color: #fff; }
-  .iv-3 .iv3-card.dark p { color: rgba(255,255,255,0.6); }
-
-  /* ── V4 STATS — green, big stat numbers ── */
-  .iv-4 { background: var(--verde); color: #fff; padding: 110px 0; position: relative; overflow: hidden; }
-  .iv-4::after { content: ''; position: absolute; right: 0; top: 0; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(247,108,0,0.06)); pointer-events: none; }
-  .iv-4-in { max-width: var(--max-w); margin: 0 auto; padding: 0 48px; position: relative; }
-  .iv-4 .iv4-eb { display: inline-flex; gap: 12px; align-items: center; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: rgba(255,255,255,0.55); text-transform: uppercase; margin-bottom: 24px; }
-  .iv-4 .iv4-eb .n { color: var(--laranja); font-weight: 700; }
-  .iv-4 .iv4-eb .ln { width: 32px; height: 1px; background: var(--laranja); }
-  .iv-4 .iv4-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 56px; margin-bottom: 64px; flex-wrap: wrap; }
-  .iv-4 .iv4-title { font-size: clamp(34px, 3.8vw, 56px); font-weight: 700; line-height: 1.0; letter-spacing: -0.025em; max-width: 640px; }
-  .iv-4 .iv4-title em { font-style: normal; color: var(--laranja); display: block; }
-  .iv-4 .iv4-sub { font-size: 14.5px; line-height: 1.65; color: rgba(255,255,255,0.6); max-width: 360px; }
-  .iv-4 .iv4-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.18); }
-  .iv-4 .iv4-stat { padding: 36px 26px 32px; border-right: 1px solid rgba(255,255,255,0.18); display: flex; flex-direction: column; gap: 8px; transition: background 0.25s; cursor: default; }
-  .iv-4 .iv4-stat:last-child { border-right: none; }
-  .iv-4 .iv4-stat:hover { background: rgba(0,0,0,0.18); }
-  .iv-4 .iv4-stat .top { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--laranja); font-weight: 700; }
-  .iv-4 .iv4-stat .big { font-size: clamp(48px, 5.5vw, 84px); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: #fff; font-variant-numeric: tabular-nums; }
-  .iv-4 .iv4-stat .big sub { font-size: 0.35em; font-weight: 500; color: rgba(255,255,255,0.55); vertical-align: baseline; margin-left: 6px; }
-  .iv-4 .iv4-stat h4 { font-size: 14px; font-weight: 600; margin-top: 8px; }
-  .iv-4 .iv4-stat p { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.55); }
-
-  /* ── Responsive (kept variants 1–4) ── */
   @media (max-width: 1024px) {
     .iv-2 .iv2-head { grid-template-columns: 1fr; gap: 32px; }
     .iv-2 .iv2-chips { grid-template-columns: 1fr 1fr; }
-    .iv-4 .iv4-head { grid-template-columns: 1fr; gap: 32px; }
-    .iv-3 .iv3-grid { grid-template-columns: 1fr 1fr; }
-    .iv-3 .iv3-eb { position: relative; margin-bottom: 16px; }
-    .iv-4 .iv4-stats { grid-template-columns: 1fr 1fr; }
-    .iv-4 .iv4-stat:nth-child(2n) { border-right: none; }
-    .iv-4 .iv4-stat:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.18); }
   }
   @media (max-width: 640px) {
-    .iv-2 .iv2-chips, .iv-3 .iv3-grid, .iv-4 .iv4-stats { grid-template-columns: 1fr; }
-    .iv-3 .iv3-card.tall { grid-row: auto; min-height: 0; }
-    .iv-4 .iv4-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.18); }
+    .iv-2 .iv2-chips { grid-template-columns: 1fr; }
   }
 
-  /* ── Tweaks Panel ── */
-  .twk-panel { position: fixed; right: 16px; bottom: 16px; z-index: 2147483646; width: 280px; max-height: calc(100vh - 32px); display: none; flex-direction: column; background: rgba(15,15,12,0.94); color: #fff; backdrop-filter: blur(14px) saturate(140%); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; box-shadow: 0 24px 60px rgba(0,0,0,0.45); font: 11.5px/1.45 'Space Mono', ui-monospace, monospace; overflow: hidden; }
-  .twk-panel.open { display: flex; }
-  .twk-hd { display: flex; align-items: center; justify-content: space-between; padding: 12px 10px 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); user-select: none; }
-  .twk-hd b { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
-  .twk-hd b::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--laranja); box-shadow: 0 0 0 0 rgba(247,108,0,0.5); animation: pulseDot 2s ease-out infinite; }
-  .twk-x { appearance: none; background: transparent; border: 0; color: rgba(255,255,255,0.45); width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 14px; line-height: 1; }
-  .twk-x:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .twk-body { padding: 14px; overflow-y: auto; min-height: 0; }
-  .twk-sect { font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin: 4px 0 10px; }
-  .twk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .twk-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  .twk-opt { appearance: none; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.75); padding: 9px 10px; border-radius: 6px; cursor: pointer; text-align: left; font: inherit; transition: all 0.16s; }
-  .twk-opt:hover { background: rgba(255,255,255,0.06); color: #fff; border-color: rgba(255,255,255,0.22); }
-  .twk-opt.active { background: var(--laranja); color: #fff; border-color: var(--laranja); }
-  .twk-opt .n { display: block; font-size: 9.5px; color: rgba(255,255,255,0.45); margin-bottom: 3px; letter-spacing: 0.12em; }
-  .twk-opt.active .n { color: rgba(255,255,255,0.9); }
-  .twk-opt .l { display: block; font-size: 11px; font-weight: 500; line-height: 1.3; letter-spacing: 0; }
-  .twk-opt.pos { text-align: center; padding: 11px 6px; }
-  .twk-opt.pos .l { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
-  .twk-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 14px 0 10px; }
-  .twk-foot { padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 9.5px; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -2133,17 +1042,14 @@
       <li><a href="#parceiros">Parceiros</a></li>
       <li><a href="#contato" class="nav-cta">Contato</a></li>
     </ul>
-    <div class="nav-social">
-      <!-- LinkedIn -->
-      <a href="#" aria-label="LinkedIn">
-        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
-      <!-- YouTube -->
-      <a href="#" aria-label="YouTube">
-        <svg viewBox="0 0 24 24"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-      </a>
-      <!-- Instagram -->
-      <a href="#" aria-label="Instagram">
+    <button class="nav-hamburger" id="navHamburger" aria-label="Abrir menu" aria-expanded="false" type="button">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-social" data-ig-style="selo" data-ig-color="cinza">
+      <!-- Instagram (único — LinkedIn / YouTube removidos p/ lançamento) -->
+      <a href="https://www.instagram.com/pontteenergia" target="_blank" rel="noopener" aria-label="Instagram" class="ig-only">
         <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
       </a>
     </div>
@@ -2151,7 +1057,7 @@
 </nav>
 
 <!-- HERO -->
-<section class="hero" id="hero" data-variant="hv-typo" data-bg-photo="on" data-hero-bg="ponte" data-screen-label="01 Hero">
+<section class="hero" id="hero" data-variant="hv-typo" data-bg-photo="on" data-hero-bg="ponte">
 
   <!-- Photo backdrop: bridge (default), bridge-dark, or transmission towers (tweak) -->
   <div class="hv-photo" aria-hidden="true">
@@ -2172,11 +1078,7 @@
   <!-- Corner meta -->
   <div class="cc-meta-tl">
     <span class="cc-meta-tagline">Polo de Novas Tecnologias para a Transformação Energética e Digital.</span>
-    <span class="cc-meta-loc">UFF × ONS · Niterói, RJ</span>
-  </div>
-  <div class="cc-meta-br">
-    <span class="cc-pulse-dot"></span>
-    <span>Sistema Interligado Nacional · ao vivo</span>
+    <span class="cc-meta-loc">ONS × UFF · Niterói, RJ</span>
   </div>
 
   <!-- Hero content (above all layers) -->
@@ -2184,8 +1086,8 @@
     <div class="hero-content">
       <h1 class="hero-title">
         Conectar<br>
-        <span class="t-verde">saberes.</span><br>
-        <span class="t-azul">Energizar</span><br>
+        <span class="t-azul">saberes.</span><br>
+        <span class="t-verde">Energizar</span><br>
         <span class="t-laranja">o futuro.</span>
       </h1>
       <p class="hero-sub">
@@ -2209,7 +1111,7 @@
     <span class="marquee-item">Monitoramento e Automação <span class="marquee-dot"></span></span>
     <span class="marquee-item">Subestações Digitais <span class="marquee-dot"></span></span>
     <span class="marquee-item">Transição Energética <span class="marquee-dot"></span></span>
-    <span class="marquee-item">UFF × ONS · Niterói <span class="marquee-dot"></span></span>
+    <span class="marquee-item">ONS × UFF · Niterói <span class="marquee-dot"></span></span>
     <span class="marquee-item">Nova Indústria Brasil <span class="marquee-dot"></span></span>
     <span class="marquee-item">Cibersegurança em Infraestruturas Críticas <span class="marquee-dot"></span></span>
     <span class="marquee-item">Inteligência Artificial Aplicada <span class="marquee-dot"></span></span>
@@ -2217,7 +1119,7 @@
     <span class="marquee-item">Monitoramento e Automação <span class="marquee-dot"></span></span>
     <span class="marquee-item">Subestações Digitais <span class="marquee-dot"></span></span>
     <span class="marquee-item">Transição Energética <span class="marquee-dot"></span></span>
-    <span class="marquee-item">UFF × ONS · Niterói <span class="marquee-dot"></span></span>
+    <span class="marquee-item">ONS × UFF · Niterói <span class="marquee-dot"></span></span>
     <span class="marquee-item">Nova Indústria Brasil <span class="marquee-dot"></span></span>
   </div>
 </div>
@@ -2244,11 +1146,6 @@
         <p style="font-size:15px; line-height:1.7; color:var(--texto2); margin-bottom:32px;">
           Será instalado em um espaço de <b style="color:var(--texto)">500 m²</b> no <b style="color:var(--texto)">Distrito de Inovação de Niterói</b>, cedido pela Prefeitura, com apoio institucional da UFF, UERJ, ONS e FAPERJ.
         </p>
-        <button class="cd-trigger" id="cd-trigger" type="button">
-          <span class="cd-trigger-num">+07</span>
-          <span>Ver detalhamento completo</span>
-          <span class="cd-trigger-arrow">→</span>
-        </button>
         <div class="sobre-stats" style="margin-bottom:0">
           <div class="stat-item">
             <div class="stat-num">5<span>+</span></div>
@@ -2321,7 +1218,7 @@
 
     </div>
 
-    <!-- Host for inline detail layouts (tabs / acordeao / stepper / timeline / dossie) -->
+    <!-- Host for Centro detail (layout expansao) -->
     <div id="cd-inline-host"></div>
 
   </div>
@@ -2342,12 +1239,12 @@
       </div>
     </div>
     <div class="linhas-grid fade-in">
-      <div id="linhas-container" data-layout="acordeon-v"></div>
+      <div id="linhas-container" data-layout="acordeon-h"></div>
     </div>
   </div>
 </section>
 
-<!-- INFRAESTRUTURA — 4 variants, switchable via Tweaks -->
+<!-- INFRAESTRUTURA -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="ic-lab" viewBox="0 0 28 28" fill="none">
@@ -2378,10 +1275,7 @@
 </svg>
 
 <section class="infra-section" id="infra">
-  <div class="infra-host" data-active="2">
-
-    <!-- ─────── V2 · CINEMA ─────── -->
-    <div class="iv iv-2">
+    <div class="iv-2">
       <div class="iv-2-in">
         <div class="iv2-eb"><span class="n">03</span><span class="ln"></span><span>Infraestrutura · onde a teoria vira teste</span></div>
         <div class="iv2-head">
@@ -2396,8 +1290,6 @@
         </div>
       </div>
     </div>
-
-  </div>
 </section>
 
 <!-- SERVIÇOS — seção unificada com foto integrada -->
@@ -2474,26 +1366,26 @@
       </div>
     </div>
     <div class="parceiros-grid fade-in">
-      <div class="parceiro-card">
-        <span class="parceiro-tag">Universidade</span>
-        <div class="parceiro-name">UFF</div>
-        <p class="parceiro-desc">Universidade Federal Fluminense — parceira acadêmica fundante, base de pesquisadores, laboratórios e produção científica.</p>
-      </div>
-      <div class="parceiro-card">
+      <a class="parceiro-card" href="https://www.ons.org.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
         <span class="parceiro-tag">Operador Nacional</span>
         <div class="parceiro-name">ONS</div>
         <p class="parceiro-desc">Operador Nacional do Sistema Elétrico — traz os desafios reais do SIN e o contexto operacional que orienta toda a agenda de PD&amp;I.</p>
-      </div>
-      <div class="parceiro-card">
+      </a>
+      <a class="parceiro-card" href="https://www.uff.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
+        <span class="parceiro-tag">Universidade</span>
+        <div class="parceiro-name">UFF</div>
+        <p class="parceiro-desc">Universidade Federal Fluminense — parceira acadêmica fundante, base de pesquisadores, laboratórios e produção científica.</p>
+      </a>
+      <a class="parceiro-card" href="https://niteroi.rj.gov.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
         <span class="parceiro-tag">Inovação Municipal</span>
         <div class="parceiro-name">Niterói</div>
         <p class="parceiro-desc">Distrito de Inovação de Niterói — suporte institucional local para o ecossistema de inovação dentro do território fluminense.</p>
-      </div>
-      <div class="parceiro-card">
+      </a>
+      <a class="parceiro-card" href="https://www.faperj.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
         <span class="parceiro-tag">Fomento à Pesquisa</span>
         <div class="parceiro-name">FAPERJ</div>
         <p class="parceiro-desc">Fundação Carlos Chagas Filho de Amparo à Pesquisa do Estado do Rio de Janeiro — agência estadual de fomento que apoia bolsas, projetos e infraestrutura de PD&amp;I no território fluminense.</p>
-      </div>
+      </a>
     </div>
 
   </div>
@@ -2511,70 +1403,51 @@
     <p class="cta-sub fade-in">Proposta de parceria, projeto cooperativo ou consultoria — entre em contato.</p>
     <div class="cta-actions fade-in">
       <a href="mailto:pontte@ons.org.br" class="btn-primary">Fale Conosco</a>
-      <a href="#" class="btn-ghost-inv">Proposta de Parceria →</a>
+      <a href="mailto:pontte@ons.org.br?subject=Proposta%20de%20Parceria%20%E2%80%94%20PONTTE" class="btn-ghost-inv">Proposta de Parceria →</a>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
+<!-- FOOTER (Horizontal) -->
+<footer id="site-footer" data-footer-variant="v4">
   <div class="container">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="uploads/Imagem1.png" alt="PONTTE" class="footer-logo-img">
-        <p>Polo de Novas Tecnologias para a Transformação Energética e Digital</p>
-      </div>
-      <div class="footer-col">
-        <h5>Institucional</h5>
-        <ul>
-          <li><a href="#">O Centro</a></li>
-          <li><a href="#">Visão e Missão</a></li>
-          <li><a href="#">Governança</a></li>
-          <li><a href="#">Histórico</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Pesquisa</h5>
-        <ul>
-          <li><a href="#">Cibersegurança</a></li>
-          <li><a href="#">IA Aplicada</a></li>
-          <li><a href="#">Big Data</a></li>
-          <li><a href="#">Subestações Digitais</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Centro</h5>
-        <ul>
-          <li><a href="#">Infraestrutura</a></li>
-          <li><a href="#">Serviços</a></li>
-          <li><a href="#">Parcerias</a></li>
-          <li><a href="#">Contato</a></li>
-        </ul>
+    <div class="footer-topbar">
+      <img src="uploads/Imagem1.png" alt="PONTTE" class="footer-logo-img">
+      <ul class="footer-nav-inline">
+        <li><a href="#sobre">O Centro</a></li>
+        <li><a href="#linhas">Pesquisa</a></li>
+        <li><a href="#infra">Infraestrutura</a></li>
+        <li><a href="#servicos">Serviços</a></li>
+        <li><a href="#parceiros">Parceiros</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <div class="footer-social" data-ig-style="selo">
+        <a href="https://www.instagram.com/pontteenergia" target="_blank" rel="noopener" aria-label="Instagram" class="ig-only"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
       </div>
     </div>
-    <div class="footer-addresses-row">
-      <h5 class="footer-addr-label">Endereços UFF</h5>
-      <div class="footer-addr-items">
-        <p class="footer-addr">
-          <b>Campus do Gragoatá</b> · Rua Professor Marcos Waldemar de Freitas Reis, São Domingos, Niterói, RJ — CEP 24210-201
-        </p>
-        <p class="footer-addr">
-          <b>Campus do Valonguinho</b> · Outeiro de São João Batista, Centro, Niterói, RJ — CEP 24020-141
-        </p>
+    <div class="footer-mid">
+      <p class="footer-tagline">Polo de Novas Tecnologias para a Transformação Energética e Digital</p>
+      <div class="footer-addr-block"><b>Campus do Gragoatá</b>Rua Prof. Marcos Waldemar de Freitas Reis, São Domingos, Niterói/RJ — CEP 24210-201</div>
+      <div class="footer-addr-block"><b>Campus do Valonguinho</b>Outeiro de São João Batista, Centro, Niterói/RJ — CEP 24020-141</div>
+    </div>
+    <div class="footer-meaning">
+      <b class="brand">PONTTE</b> — uma iniciativa Operador Nacional do Sistema Elétrico × Universidade Federal Fluminense, sediada em Niterói/RJ.
+    </div>
+    <div class="footer-strip">
+      <div class="footer-strip-left">
+        <span>© 2026 PONTTE · ONS × UFF · Niterói, RJ</span>
+        <span class="footer-sep">·</span>
+        <a href="https://www.ons.org.br/AcervoDigitalDocumentosEPublicacoes/POL.PRV_Prote%c3%a7%c3%a3o-de-Dados-Pessoais-e-Privacidade.pdf" target="_blank" rel="noopener" class="footer-priv">Privacidade e proteção de dados</a>
       </div>
-    </div>
-    <div class="pontte-meaning-strip" style="line-height: 1.7; padding: 12px 0px; margin: 8px 0px 0px">
-      <span style="color: rgba(250,250,247,0.45); font-size: 13px"><b class="brand" style="color: rgb(255, 255, 255)">PONTTE</b> — uma iniciativa Universidade Federal Fluminense × Operador Nacional do Sistema Elétrico, sediada em Niterói/RJ.</span>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2026 PONTTE · UFF × ONS · Niterói, RJ</p>
-      <div class="footer-partners">
-        <span class="fp-logo">UFF</span>
-        <span style="color:rgba(250,250,247,0.1)">·</span>
-        <span class="fp-logo">ONS</span>
-        <span style="color:rgba(250,250,247,0.1)">·</span>
-        <span class="fp-logo">FAPERJ</span>
-        <span style="color:rgba(250,250,247,0.1)">·</span>
+      <div class="footer-strip-right">
+        <a class="fp-logo" href="https://www.ons.org.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">ONS</a>
+        <span class="footer-sep">·</span>
+        <a class="fp-logo" href="https://www.uff.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">UFF</a>
+        <span class="footer-sep">·</span>
+        <a class="fp-logo" href="https://niteroi.rj.gov.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">Niterói</a>
+        <span class="footer-sep">·</span>
+        <a class="fp-logo" href="https://www.faperj.br/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">FAPERJ</a>
+        <span class="footer-sep">·</span>
         <span class="fp-logo">pontte.ons.org.br</span>
       </div>
     </div>
@@ -2586,16 +1459,6 @@
   const nav = document.getElementById('main-nav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 20);
-  }, { passive: true });
-
-  // Parallax on hero layers
-  const paraLayers = document.querySelectorAll('.para-layer[data-speed]');
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    paraLayers.forEach(el => {
-      const speed = parseFloat(el.dataset.speed);
-      el.style.transform = `translateY(${y * speed}px)`;
-    });
   }, { passive: true });
 
   // Fade-in on scroll
@@ -2610,130 +1473,6 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
   fades.forEach(el => io.observe(el));
 
-</script>
-
-<!-- ─────────────────────────────────────────────────────────────
-     TWEAKS — Hero background photo (Ponte vs Torres)
-     ───────────────────────────────────────────────────────────── -->
-<aside class="twk-panel" id="twk-panel" aria-hidden="true">
-  <div class="twk-hd">
-    <b>Tweaks</b>
-    <button class="twk-x" id="twk-close" aria-label="Fechar">✕</button>
-  </div>
-  <div class="twk-body">
-    <div class="twk-sect">Fundo do Hero</div>
-    <div class="twk-grid">
-      <button class="twk-opt" data-tweak="heroBg" data-val="ponte">
-        <span class="n">01</span>
-        <span class="l">Ponte clara</span>
-      </button>
-      <button class="twk-opt" data-tweak="heroBg" data-val="ponte-escura">
-        <span class="n">02</span>
-        <span class="l">Ponte escura</span>
-      </button>
-      <button class="twk-opt" data-tweak="heroBg" data-val="torres" style="grid-column: 1 / -1;">
-        <span class="n">03</span>
-        <span class="l">Torres</span>
-      </button>
-    </div>
-
-  </div>
-  <div class="twk-foot">PONTTE · UFF × ONS</div>
-</aside>
-
-<script>
-(function () {
-  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-    "heroBg": "ponte"
-  }/*EDITMODE-END*/;
-
-  // Locked layouts (no longer user-tweakable)
-  const LINHAS_LAYOUT = 'acordeon-h';
-  const CENTRO_LAYOUT = 'expansao';
-
-  const PHOTOS = {
-    'ponte':         'uploads/fundo_ponte.jpg',
-    'ponte-escura':  'uploads/fundo_ponte_escura.jpg',
-    'torres':        'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=2000&q=85&fit=crop&crop=center'
-  };
-
-  const hero     = document.getElementById('hero');
-  const heroImg  = document.getElementById('hero-bg-img');
-  const panel    = document.getElementById('twk-panel');
-  const closeBtn = document.getElementById('twk-close');
-
-  let state = { ...TWEAK_DEFAULTS };
-
-  function apply() {
-    const bg = state.heroBg || 'ponte';
-    hero.setAttribute('data-hero-bg', bg);
-    if (heroImg && PHOTOS[bg]) heroImg.src = PHOTOS[bg];
-    panel.querySelectorAll('.twk-opt[data-tweak="heroBg"]').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.val === bg);
-    });
-
-    // Linhas de Pesquisa layout — locked
-    if (window.PontteLinhas && typeof window.PontteLinhas.render === 'function') {
-      window.PontteLinhas.render(LINHAS_LAYOUT);
-    } else {
-      const tryRender = () => {
-        if (window.PontteLinhas && window.PontteLinhas.render) {
-          window.PontteLinhas.render(LINHAS_LAYOUT);
-        } else {
-          setTimeout(tryRender, 60);
-        }
-      };
-      tryRender();
-    }
-
-    // Centro de PD&I detail layout — locked
-    if (window.PontteCentro && typeof window.PontteCentro.setLayout === 'function') {
-      window.PontteCentro.setLayout(CENTRO_LAYOUT);
-    } else {
-      const tryC = () => {
-        if (window.PontteCentro && window.PontteCentro.setLayout) {
-          window.PontteCentro.setLayout(CENTRO_LAYOUT);
-        } else setTimeout(tryC, 60);
-      };
-      tryC();
-    }
-
-    // Inline layout — hide the "open detail" trigger button
-    const trigger = document.getElementById('cd-trigger');
-    if (trigger) trigger.style.display = 'none';
-  }
-
-  function setTweak(patch) {
-    state = { ...state, ...patch };
-    apply();
-    try {
-      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
-    } catch (e) {}
-  }
-
-  panel.querySelectorAll('.twk-opt').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setTweak({ [btn.dataset.tweak]: btn.dataset.val });
-    });
-  });
-
-  closeBtn.addEventListener('click', () => {
-    panel.classList.remove('open');
-    try { window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*'); } catch (e) {}
-  });
-
-  // Edit-mode protocol: register listener BEFORE announcing availability
-  window.addEventListener('message', (ev) => {
-    const d = ev.data;
-    if (!d || typeof d !== 'object') return;
-    if (d.type === '__activate_edit_mode')   panel.classList.add('open');
-    if (d.type === '__deactivate_edit_mode') panel.classList.remove('open');
-  });
-
-  try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch (e) {}
-
-  apply();
-})();
 </script>
 
 <script src="linhas-layouts.js"></script>
@@ -2797,11 +1536,167 @@
   })();
 </script>
 
+<!-- MOBILE: Hamburger + Acordeon-H variant switcher -->
+<script>
+  // ── Hamburger nav ──
+  (function(){
+    var btn = document.getElementById('navHamburger');
+    var links = document.querySelector('.nav-links');
+    var nav = document.getElementById('main-nav');
+    if (!btn || !links) return;
+    function close(){
+      btn.classList.remove('is-open');
+      links.classList.remove('is-open');
+      nav && nav.classList.remove('menu-open');
+      btn.setAttribute('aria-expanded','false');
+    }
+    btn.addEventListener('click', function(){
+      var open = btn.classList.toggle('is-open');
+      links.classList.toggle('is-open', open);
+      nav && nav.classList.toggle('menu-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // Fecha menu ao clicar em link
+    links.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', close);
+    });
+  })();
+
+  // ── Acordeon-H · mobile: Pills variant (sempre ativa em ≤767px) ──
+  (function(){
+    var container = document.getElementById('linhas-container');
+    if (!container) return;
+
+    var VARIANT = 'mobile-v2';
+    var MQ = window.matchMedia('(max-width: 767px)');
+
+    function isMobile(){ return MQ.matches; }
+
+    function renderDetailCard(){
+      cleanupDetail();
+      var openItem = container.querySelector('.lin-item.open');
+      if (!openItem) return null;
+
+      var num    = (openItem.querySelector('.lin-num')   || {}).textContent || '';
+      var iconEl = openItem.querySelector('.lin-icon-h');
+      var title  = (openItem.querySelector('.lin-title-h') || {}).textContent || '';
+      var descHTML = (openItem.querySelector('.lin-desc-h') || {}).innerHTML || '';
+      var lc = openItem.style.getPropertyValue('--lc') || '';
+
+      var card = document.createElement('div');
+      card.className = 'mv-detail-card';
+      if (lc) card.style.background = lc.trim();
+
+      var html = '';
+      html += '<button type="button" class="mv-d-close" aria-label="Fechar">' +
+                '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>' +
+              '</button>';
+      if (num)   html += '<span class="mv-d-num">' + num + '</span>';
+      if (iconEl) html += '<span class="mv-d-icon">' + iconEl.innerHTML + '</span>';
+      if (title) html += '<h3 class="mv-d-title">' + title + '</h3>';
+      if (descHTML) html += '<p class="mv-d-desc">' + descHTML + '</p>';
+      card.innerHTML = html;
+      container.appendChild(card);
+
+      // Botão X: fecha e rola de volta para a pill que estava aberta
+      var closeBtn = card.querySelector('.mv-d-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var targetItem = container.querySelector('.lin-item.open');
+          closeAll();
+          if (targetItem) {
+            requestAnimationFrame(function(){
+              var rect = targetItem.getBoundingClientRect();
+              var navOffset = 64 + 16;
+              var targetY = window.scrollY + rect.top - navOffset;
+              window.scrollTo({ top: targetY, behavior: 'smooth' });
+            });
+          }
+        });
+      }
+      return card;
+    }
+
+    function cleanupDetail(){
+      var existing = container.querySelector('.mv-detail-card');
+      if (existing) existing.remove();
+    }
+
+    function closeAll(){
+      container.querySelectorAll('.lin-item.open').forEach(function(it){ it.classList.remove('open'); });
+      cleanupDetail();
+    }
+
+    // Aplica classe da variante; toggle responsivo via media query
+    function syncClass(){
+      if (isMobile()) {
+        container.classList.add(VARIANT);
+      } else {
+        container.classList.remove(VARIANT);
+        cleanupDetail();
+      }
+    }
+
+    // Handler em capture phase para interceptar antes do click do linhas-layouts.js
+    container.addEventListener('click', function(e){
+      if (!isMobile()) return; // desktop: deixa o handler original agir
+      var item = e.target.closest('.lin-item');
+      if (!item || !container.contains(item)) return;
+      // Bloqueia o handler original (que sempre re-adiciona .open)
+      e.stopPropagation();
+
+      var wasOpen = item.classList.contains('open');
+      closeAll();
+      if (wasOpen) return; // segundo clique no mesmo → fica tudo fechado
+
+      item.classList.add('open');
+      var card = renderDetailCard();
+      // Scroll suave até o card para o usuário ver o conteúdo aberto
+      if (card) {
+        requestAnimationFrame(function(){
+          var rect = card.getBoundingClientRect();
+          var navOffset = 64 + 16;
+          var targetY = window.scrollY + rect.top - navOffset;
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        });
+      }
+    }, true);
+
+    // Inicializa e re-sincroniza em resize
+    function init(){
+      if (container.children.length === 0) {
+        setTimeout(init, 100);
+        return;
+      }
+      syncClass();
+      // Garante começar com tudo fechado em mobile
+      if (isMobile()) closeAll();
+    }
+    init();
+
+    // Resize: alterna classe e limpa estado se sair do mobile
+    if (MQ.addEventListener) {
+      MQ.addEventListener('change', function(){ syncClass(); });
+    } else if (MQ.addListener) {
+      MQ.addListener(function(){ syncClass(); });
+    }
+
+    // Re-aplica quando o renderer recria os items
+    var mo = new MutationObserver(function(mutations){
+      // Ignora mutações do próprio detail-card
+      var triviallyOurs = mutations.every(function(m){
+        return [].slice.call(m.addedNodes).concat([].slice.call(m.removedNodes))
+          .every(function(n){ return n.classList && n.classList.contains('mv-detail-card'); });
+      });
+      if (triviallyOurs) return;
+      syncClass();
+      cleanupDetail();
+    });
+    mo.observe(container, { childList: true });
+  })();
+</script>
+
 </body>
 </html>
 
-<style id="__om-edit-overrides">
-#hero .pontte-acronym >:is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) { font-weight: 400 !important }
-#linhas div :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) >span { font-weight: 700 !important }
-#linhas div :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) >span { font-weight: 400 !important }
-</style>
